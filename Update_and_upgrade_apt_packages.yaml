@@ -1,14 +1,65 @@
-- name: Sample AWX Playbook for Ubuntu Servers
+- name: Upgrade packages on any Linux
   hosts: all
   become: yes
   gather_facts: yes
 
   tasks:
-    - name: Update apt cache
+    # Debian / Ubuntu
+    - name: Debian/Ubuntu | update apt cache
       apt:
         update_cache: yes
-        cache_valid_time: 86400   # one day
+        cache_valid_time: 86400
+      when: ansible_facts.os_family == "Debian"
 
-    - name: Upgrade installed packages
+    - name: Debian/Ubuntu | upgrade installed packages (no dist)
       apt:
         upgrade: yes
+      when: ansible_facts.os_family == "Debian"
+
+    # RHEL / CentOS / Alma / Rocky / Amazon Linux
+    - name: RedHat family (dnf) | refresh metadata
+      dnf:
+        update_cache: yes
+      when: ansible_facts.os_family == "RedHat" and ansible_facts.pkg_mgr == "dnf"
+
+    - name: RedHat family (dnf) | upgrade all packages
+      dnf:
+        name: "*"
+        state: latest
+      when: ansible_facts.os_family == "RedHat" and ansible_facts.pkg_mgr == "dnf"
+
+    - name: RedHat family (yum) | upgrade all packages (EL7, some Amazon Linux)
+      yum:
+        name: "*"
+        state: latest
+      when: ansible_facts.os_family == "RedHat" and ansible_facts.pkg_mgr == "yum"
+
+    # SUSE (openSUSE / SLES)
+    - name: SUSE | refresh cache & upgrade all
+      zypper:
+        name: "*"
+        state: latest
+        update_cache: yes
+      when: ansible_facts.os_family == "Suse"
+
+    # Arch Linux
+    - name: Arch | refresh package databases
+      pacman:
+        update_cache: yes
+      when: ansible_facts.distribution == "Archlinux"
+
+    - name: Arch | upgrade all packages
+      pacman:
+        upgrade: yes
+      when: ansible_facts.distribution == "Archlinux"
+
+    # Alpine Linux
+    - name: Alpine | update cache
+      apk:
+        update_cache: yes
+      when: ansible_facts.distribution == "Alpine"
+
+    - name: Alpine | upgrade all packages
+      apk:
+        upgrade: yes
+      when: ansible_facts.distribution == "Alpine"
