@@ -1,4 +1,4 @@
-- name: Upgrade packages on any Linux
+  - name:   Ping hosts
   hosts: all
   become: yes
   gather_facts: no
