@@ -1,6 +1,8 @@
-  - name:   Ping hosts
+- name: Ping hosts
   hosts: all
-  become: yes
+  become: no     # no need for sudo just to ping
   gather_facts: no
+
   tasks:
-    - ping:
+    - name: Ping each host
+      ansible.builtin.ping:
