@@ -1,11 +1,14 @@
-- name: Update and upgrade apt packages
+- name: Sample AWX Playbook for Ubuntu Servers
   hosts: all
   become: yes
-  gather_facts: no
+  gather_facts: yes
 
   tasks:
-    - name: Update cache and upgrade packages
+    - name: Update apt cache
       apt:
         update_cache: yes
-        upgrade: yes          # or 'dist' for dist-upgrade
-        cache_valid_time: 86400
+        cache_valid_time: 86400   # one day
+
+    - name: Upgrade installed packages
+      apt:
+        upgrade: yes
