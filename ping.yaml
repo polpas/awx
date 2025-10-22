@@ -1,4 +1,6 @@
-- hosts: all
+- name: Upgrade packages on any Linux
+  hosts: all
+  become: yes
   gather_facts: no
   tasks:
     - ping:
